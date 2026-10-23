@@ -1,5 +1,3 @@
-
-
 const Booking = require("../models/Booking")
 
 const getBookings = async (req, res) => {
