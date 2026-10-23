@@ -1,0 +1,24 @@
+const {config} = require("../config/config")
+const jwt = require("jsonwebtoken")
+const verifyToken = async (req, res, next) => {
+    try {
+        if(req.method == 'OPTIONS'){
+            return next();
+        }
+        const token = req.cookies?.token;
+        if(!token){
+            return res.status(401).json({
+                message: "No token provided!"
+            })
+        }
+        const decoded = jwt.verify(token, config.jwt_secret);
+        req.user = decoded;
+        next();
+    } catch (error) {
+        res.status(401).json({
+            message: error.message
+        })
+    }
+}
+
+module.exports = verifyToken

@@ -1,0 +1,5 @@
+----------------
+User -> login || register -> token -> middleware -> token ? create / read / update / delete : no auth
+logout
+
+
