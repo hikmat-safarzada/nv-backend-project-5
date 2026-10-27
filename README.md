@@ -30,7 +30,7 @@ A backend REST API for a hotel booking system built with Node.js, Express.js, an
 ## Project Structure
 
 ```text
-hotel-booking/
+nv-project-5/
 ├── src/
 │   ├── config/
 │   ├── controllers/
@@ -53,7 +53,7 @@ The exact file structure may differ depending on your implementation.
 
 ```bash
 git clone <your-repository-url>
-cd hotel-booking
+cd nv-project-5
 ```
 
 ### 2. Install dependencies
