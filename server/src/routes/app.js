@@ -8,6 +8,6 @@ app.use(express.json());
 app.use(cookieParser())
 
 app.use("/api/auth", authRouter);
-app.use("/api/room", roomRouter)
-app.use("/api/booking", bookingRouter)
+app.use("/api/rooms", roomRouter)
+app.use("/api/bookings", bookingRouter)
 module.exports = app

@@ -28,13 +28,13 @@ const checkAvailability = async (req, res, next) => {
 
         const overlappingBooking = await Booking.findOne({
             roomId,
-            status: { $ne: "cancelled" },
-            startDate: { $lt: end },
-            endDate: { $gt: start },
+            status: { $ne: "Cancelled" },
+            checkIn: { $lt: end },
+            checkOut: { $gt: start },
         });
 
         if (overlappingBooking) {
-            return res.status(400).json({
+            return res.status(409).json({
                 message: "Room is already booked for these dates",
             });
         }
