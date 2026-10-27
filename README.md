@@ -1,25 +1,26 @@
 # Hotel Booking System API
 
-A backend REST API for a hotel booking system built with Node.js, Express.js, and MongoDB. The application supports user authentication, role-based authorization, room management, and hotel bookings with date availability checks.
+A RESTful backend API for a hotel booking system built with Node.js, Express.js, and MongoDB. The project includes authentication, role-based access control, room management, booking management, filtering, pagination, and booking availability validation.
 
 ## Features
 
-- **Authentication:** User registration and login using JWT and password hashing.
-- **Role-Based Authorization:** Separate permissions for regular users and administrators.
-- **Room Management:** Create, retrieve, update, and delete rooms.
-- **Booking Management:** Create, view, update, and cancel bookings.
-- **Booking Availability:** Prevent overlapping bookings for the same room.
-- **Automatic Pricing:** Calculate booking prices on the server based on the room's nightly price and booking duration.
-- **Filtering:** Filter rooms by type, price range, and capacity.
-- **Pagination:** Retrieve rooms in pages using `page` and `limit` query parameters.
-- **Data Validation:** Validate incoming requests.
-- **Database Integration:** Store users, rooms, and bookings in MongoDB.
+- User registration, login, and logout
+- JWT-based authentication
+- Role-based authorization for users and administrators
+- Room CRUD operations
+- Booking creation, retrieval, updating, and cancellation
+- Room availability checks to prevent overlapping bookings
+- Automatic booking price calculation
+- Room filtering by type, price range, and capacity
+- Pagination for room listings
+- Request validation using Joi
+- MongoDB database integration
 
 ## Technologies
 
 - Node.js
 - Express.js
-- MongoDB
+- MongoDB Atlas
 - Mongoose
 - JSON Web Token (JWT)
 - bcrypt
@@ -31,21 +32,21 @@ A backend REST API for a hotel booking system built with Node.js, Express.js, an
 
 ```text
 nv-project-5/
-├── src/
-│   ├── config/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── models/
-│   ├── routes/
-│   └── validations/
-├── .env
-├── .gitignore
-├── package.json
-├── package-lock.json
-└── server.js
+├── server/
+│   ├── src/
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── middleware/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   └── validations/
+│   ├── package.json
+│   ├── package-lock.json
+│   └── server.js
+└── README.md
 ```
 
-The exact file structure may differ depending on your implementation.
+The exact structure may vary depending on the implementation.
 
 ## Installation
 
@@ -56,48 +57,48 @@ git clone <your-repository-url>
 cd nv-project-5
 ```
 
-### 2. Install dependencies
+### 2. Navigate to the backend directory
+
+```bash
+cd server
+```
+
+### 3. Install dependencies
 
 ```bash
 npm install
 ```
 
-### 3. Configure environment variables
+### 4. Configure environment variables
 
-Create a `.env` file in the project root:
+Create a `.env` file inside the `server` directory and add the environment variables required by your configuration.
+
+Example:
 
 ```env
 PORT=8080
 MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_secret_key
+JWT_SECRET=your_jwt_secret
 NODE_ENV=development
 ```
 
-Use the environment variable names expected by your actual configuration files.
+Use the exact variable names expected by your project.
 
-### 4. Start the server
+### 5. Start the server
 
 ```bash
 npm start
 ```
 
-If you use Nodemon during development, you can also run:
+For development, use the following command if your `package.json` includes a `dev` script:
 
 ```bash
 npm run dev
 ```
 
-The API will run on your configured port.
-
 ## API Endpoints
 
-Base URL:
-
-```text
-http://localhost:8080
-```
-
-The examples below use `/api/auth`, `/api/rooms`, and `/api/bookings` as base paths. Adjust them to match your Express route mounting.
+The examples below assume that the routes are mounted under `/api/auth`, `/api/rooms`, and `/api/bookings`. Adjust the paths if your application uses different prefixes.
 
 ### Authentication
 
@@ -107,7 +108,7 @@ The examples below use `/api/auth`, `/api/rooms`, and `/api/bookings` as base pa
 | POST | `/api/auth/login` | Log in |
 | POST | `/api/auth/logout` | Log out |
 
-New registrations receive the regular `user` role. Administrator privileges should be assigned separately by a trusted administrator.
+New registrations receive the regular `user` role. Administrator privileges are assigned separately.
 
 ### Rooms
 
@@ -119,13 +120,24 @@ New registrations receive the regular `user` role. Administrator privileges shou
 | PATCH | `/api/rooms/:roomId` | Admin |
 | DELETE | `/api/rooms/:roomId` | Admin |
 
-Room listing supports filtering and pagination through query parameters, including:
+#### Filtering and Pagination
 
-```text
+The room listing supports query parameters for filtering and pagination.
+
+Example:
+
+```http
 GET /api/rooms?type=Double&minPrice=50&maxPrice=200&capacity=2&page=1&limit=10
 ```
 
-Use the values supported by your room schema.
+Available parameters:
+
+- `type` — filter by room type
+- `minPrice` — minimum price per night
+- `maxPrice` — maximum price per night
+- `capacity` — room capacity
+- `page` — page number
+- `limit` — number of rooms per page
 
 ### Bookings
 
@@ -133,16 +145,14 @@ Use the values supported by your room schema.
 |---|---|---|
 | POST | `/api/bookings` | Authenticated users |
 | GET | `/api/bookings` | Admin |
-| GET | `/api/bookings/user` | Authenticated user |
+| GET | `/api/bookings/user` | Authenticated users |
 | GET | `/api/bookings/room/:roomId` | Admin |
 | PATCH | `/api/bookings/:bookingId` | Booking owner or authorized admin |
 | DELETE | `/api/bookings/:bookingId` | Booking owner or authorized admin |
 
-Booking creation checks room availability and calculates the total price on the server. The application should reject overlapping bookings and prevent users from modifying bookings belonging to other users.
+### Create Booking Example
 
-## Booking Example
-
-Example request body for creating a booking:
+Example request body:
 
 ```json
 {
@@ -153,46 +163,46 @@ Example request body for creating a booking:
 }
 ```
 
-The server calculates `totalPrice` using the room's nightly price and the number of nights.
+The server validates the dates, checks room availability, and calculates the total booking price based on the room's price per night and the number of nights.
 
 ## Testing
 
-API endpoints can be tested using Postman.
+The API can be tested using Postman.
 
 Recommended test cases:
 
 - Register a new user and log in.
-- Verify that a regular user cannot access admin-only endpoints.
-- Create, retrieve, update, and delete rooms as an admin.
-- Create a booking for an available room.
-- Attempt to book the same room for overlapping dates.
-- Verify that booking prices are calculated by the server.
-- Test booking ownership when updating or cancelling a booking.
-- Test room filters and pagination.
-- Verify invalid dates and invalid guest counts are rejected.
+- Verify that regular users cannot access admin-only endpoints.
+- Create and manage rooms as an administrator.
+- Create bookings for available rooms.
+- Verify that overlapping bookings are rejected.
+- Check booking price calculations.
+- Verify that users cannot update or cancel other users' bookings.
+- Test filtering and pagination.
+- Test invalid dates and guest counts.
 
 ## Security
 
-- Store passwords as hashes rather than plain text.
-- Keep JWT secrets and database credentials in environment variables.
-- Do not allow users to assign themselves the admin role during registration.
-- Validate and restrict incoming request fields.
-- Verify booking ownership before allowing updates or cancellation.
-- Do not commit `.env` or other secrets to GitHub.
+- Passwords should be stored as hashes.
+- JWT secrets and database credentials must be stored in environment variables.
+- Users must not be able to assign themselves the admin role during registration.
+- Incoming request data should be validated.
+- Booking ownership must be checked before updates and cancellations.
+- The `.env` file must not be committed to GitHub.
 
 ## Deployment
 
-The application can be deployed to a Node.js-compatible hosting platform and connected to MongoDB Atlas.
+The API can be deployed to a Node.js-compatible hosting platform such as Render and connected to MongoDB Atlas.
 
 Before deployment:
 
 1. Configure production environment variables.
 2. Set `NODE_ENV=production`.
-3. Configure secure cookie settings if JWT authentication uses cookies.
-4. Configure CORS appropriately if the frontend is hosted separately.
-5. Verify that the deployed API can connect to MongoDB.
-6. Test authentication, authorization, room management, and booking availability in production.
+3. Configure secure cookie settings if authentication uses cookies.
+4. Configure CORS if the frontend is hosted separately.
+5. Verify the database connection.
+6. Test the live API endpoints after deployment.
 
 ## License
 
-This project was created for learning and backend development practice.
+This project was developed for backend development practice and educational purposes.
