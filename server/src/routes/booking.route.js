@@ -10,7 +10,7 @@ const verifyToken = require("../middleware/auth.middleware");
 
 router.get("/user", verifyToken, getUserBookings);
 router.get("/", verifyToken , authorizeAdmin , getBookings);
-router.get("/room/:roomId", verifyToken, authorizeAdmin, getRoomBookings);
+router.get("/rooms/:roomId", verifyToken, authorizeAdmin, getRoomBookings);
 
 
 router.post("/", verifyToken, checkAvailability, createBooking);
